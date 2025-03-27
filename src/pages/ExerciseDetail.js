@@ -1,18 +1,28 @@
-import React, { useEffect, useState } from "react";
+// src/pages/ExerciseDetail.js
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { Box } from "@mui/material";
-
-import { exerciseOptions, fetchData, youtubeOptions } from "../utils/fetchData";
+import { fetchData, exerciseOptions, youtubeOptions } from "../utils/fetchData";
+import {
+  setExerciseDetail,
+  setExerciseVideos,
+  setTargetMuscleExercises,
+  setEquipmentExercises,
+} from "../redux/exerciseDetailSlice";
 import Detail from "../components/Detail";
 import ExerciseVideos from "../components/ExerciseVideos";
 import SimilarExercises from "../components/SimilarExercises";
 
 const ExerciseDetail = () => {
-  const [exerciseDetail, setExerciseDetail] = useState({});
-  const [exerciseVideos, setExerciseVideos] = useState([]);
-  const [targetMuscleExercises, setTargetMuscleExercises] = useState([]);
-  const [equipmentExercises, setEquipmentExercises] = useState([]);
   const { id } = useParams();
+  const dispatch = useDispatch();
+  const {
+    exerciseDetail,
+    exerciseVideos,
+    targetMuscleExercises,
+    equipmentExercises,
+  } = useSelector((state) => state.exerciseDetail);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -26,29 +36,29 @@ const ExerciseDetail = () => {
         `${exerciseDbUrl}/exercises/exercise/${id}`,
         exerciseOptions
       );
-      setExerciseDetail(exerciseDetailData);
+      dispatch(setExerciseDetail(exerciseDetailData));
 
       const exerciseVideosData = await fetchData(
         `${youtubeSearchUrl}/search?query=${exerciseDetailData.name} exercise`,
         youtubeOptions
       );
-      setExerciseVideos(exerciseVideosData.contents);
+      dispatch(setExerciseVideos(exerciseVideosData.contents));
 
       const targetMuscleExercisesData = await fetchData(
         `${exerciseDbUrl}/exercises/target/${exerciseDetailData.target}`,
         exerciseOptions
       );
-      setTargetMuscleExercises(targetMuscleExercisesData);
+      dispatch(setTargetMuscleExercises(targetMuscleExercisesData));
 
-      const equimentExercisesData = await fetchData(
+      const equipmentExercisesData = await fetchData(
         `${exerciseDbUrl}/exercises/equipment/${exerciseDetailData.equipment}`,
         exerciseOptions
       );
-      setEquipmentExercises(equimentExercisesData);
+      dispatch(setEquipmentExercises(equipmentExercisesData));
     };
 
     fetchExercisesData();
-  }, [id]);
+  }, [id, dispatch]);
 
   if (!exerciseDetail) return <div>No Data</div>;
 

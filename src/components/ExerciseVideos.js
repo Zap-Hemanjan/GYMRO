@@ -1,8 +1,12 @@
+// src/components/ExerciseVideos.js
 import React from "react";
 import { Typography, Box, Stack } from "@mui/material";
+import { useSelector } from "react-redux";
 import Loader from "./Loader";
 
-const ExerciseVideos = ({ exerciseVideos, name }) => {
+const ExerciseVideos = ({ name }) => {
+  const { exerciseVideos } = useSelector((state) => state.exerciseDetail);
+
   if (!exerciseVideos.length) return <Loader />;
 
   return (
@@ -20,7 +24,10 @@ const ExerciseVideos = ({ exerciseVideos, name }) => {
         exercise videos
       </Typography>
       <Stack
-        sx={{ flexDirection: { lg: "row" }, gap: { lg: "110px", xs: "0px" } }}
+        sx={{
+          flexDirection: { lg: "row" },
+          gap: { lg: "110px", xs: "0px" },
+        }}
         justifyContent="flex-start"
         flexWrap="wrap"
         alignItems="center"

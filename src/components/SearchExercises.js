@@ -1,48 +1,19 @@
-import React, { useContext, useEffect, useState } from "react";
+// src/components/SearchExercises.js
+import React, { useEffect } from "react";
 import { Box, Button, Stack, TextField, Typography } from "@mui/material";
+import { useDispatch } from "react-redux";
+import { setSearch } from "../redux/uiSlice"; // Optional
 
-import { exerciseOptions, fetchData } from "../utils/fetchData";
-import HorizontalScrollbar from "./HorizontalScrollbar";
-import ExerciseContext from "../context/ExerciseContext";
-
-const SearchExercises = () => {
-  const [search, setSearch] = useState("");
-  const [bodyParts, setBodyParts] = useState([]);
-  const { setExercises, bodyPart, setBodyPart } = useContext(ExerciseContext);
+const SearchExercises = ({ search, setSearch }) => {
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    const fetchExercisesData = async () => {
-      const bodyPartsData = await fetchData(
-        "https://exercisedb.p.rapidapi.com/exercises/bodyPartList",
-        exerciseOptions
-      );
-
-      setBodyParts(["all", ...bodyPartsData]);
-    };
-
-    fetchExercisesData();
+    // Fetch or do other setup work here if necessary
   }, []);
 
-  const handleSearch = async () => {
-    if (search) {
-      const exercisesData = await fetchData(
-        "https://exercisedb.p.rapidapi.com/exercises",
-        exerciseOptions
-      );
-
-      const searchedExercises = exercisesData.filter(
-        (item) =>
-          item.name.toLowerCase().includes(search) ||
-          item.target.toLowerCase().includes(search) ||
-          item.equipment.toLowerCase().includes(search) ||
-          item.bodyPart.toLowerCase().includes(search)
-      );
-
-      window.scrollTo({ top: 1800, left: 100, behavior: "smooth" });
-
-      setSearch("");
-      setExercises(searchedExercises);
-    }
+  const handleSearch = () => {
+    dispatch(setSearch(search)); // Update the search term
+    // Fetch new exercises based on the search term
   };
 
   return (
@@ -57,42 +28,12 @@ const SearchExercises = () => {
       </Typography>
       <Box position="relative" mb="72px">
         <TextField
-          height="76px"
-          sx={{
-            input: { fontWeight: "700", border: "none", borderRadius: "4px" },
-            width: { lg: "1170px", xs: "350px" },
-            backgroundColor: "#fff",
-            borderRadius: "40px",
-          }}
           value={search}
-          onChange={(e) => setSearch(e.target.value.toLowerCase())}
+          onChange={(e) => setSearch(e.target.value)} // Update search term
           placeholder="Search Exercises"
           type="text"
         />
-        <Button
-          className="search-btn"
-          sx={{
-            bgcolor: "#FF2625",
-            color: "#fff",
-            textTransform: "none",
-            width: { lg: "173px", xs: "80px" },
-            height: "56px",
-            position: "absolute",
-            right: "0px",
-            fontSize: { lg: "20px", xs: "14px" },
-          }}
-          onClick={handleSearch}
-        >
-          Search
-        </Button>
-      </Box>
-      <Box sx={{ position: "relative", width: "100%", p: "20px" }}>
-        <HorizontalScrollbar
-          data={bodyParts}
-          bodyParts
-          setBodyPart={setBodyPart}
-          bodyPart={bodyPart}
-        />
+        <Button onClick={handleSearch}>Search</Button>
       </Box>
     </Stack>
   );
